@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script> <!-- Add this line for jQuery UI -->
+    <script type="module" src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+</head>
+<body>
+    <div class="note">
+        <h1>Notes</h1>
+        <ul id="notes-list" class="sortable-list"></ul>
+        <input type="text" id="note" placeholder="Enter Your Lovely Note...">
+        <button id="add-button">Add Note</button>
+    </div>
+</body>
+</html>
