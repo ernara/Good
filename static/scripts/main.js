@@ -11,7 +11,7 @@ $(document).ready(function() {
     }
 
     function createNotesList(note) {
-        return `<li>${note.text} 
+        return `<li>${note.title} ${note.text} 
             <button class="update-button" data-id="${note.id}">Update</button>
             <button class="delete-button" data-id="${note.id}">Delete</button>
         </li>
@@ -19,34 +19,32 @@ $(document).ready(function() {
     }
 
     function addNote() {
+        var title = $("#title").val()
         var text = $("#note").val()
-        if (text !== "") {
-            $.ajax({
-                url: "notes",
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ "text": text }),
-                success: function() {
-                    loadNotes();
-                    $("#note-content").val("");
-                }
-            });
-        }
+        $.ajax({
+            url: "notes",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ "title": title, "text": text }),
+            success: function() {
+                loadNotes();
+                $("#note-content").val("");
+            }
+        });
     }
 
     function updateNote(noteId) {
+        var newTitle = prompt("Enter new Title:");
         var newText = prompt("Enter new Text:");
-        if (newText !== null) {
-            $.ajax({
-                url: "/notes/" + noteId,
-                type: "PUT",
-                contentType: "application/json",
-                data: JSON.stringify({ "text": newText }),
-                success: function() {
-                    loadNotes();
-                }
-            });
-        }
+        $.ajax({
+            url: "/notes/" + noteId,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ "title": newTitle, "text": newText }),
+            success: function() {
+                loadNotes();
+            }
+        });
     }
 
     function deleteItem(noteId) {
@@ -75,11 +73,6 @@ $(document).ready(function() {
     });
 
     loadNotes();
-
-    // Make the DIV element draggable:
-
-    
-
 
 });
 

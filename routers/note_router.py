@@ -12,6 +12,7 @@ def get_notes():
         for note in notes:
             notes_list.append({
                 'id': note.id,
+                'title': note.title,
                 'text': note.text
             })
 
@@ -28,7 +29,7 @@ def get_note(id):
 @note_router.route('/notes', methods=['POST'])
 def create_note():
     data = request.json
-    new_note = Note(len(notes) + 1, data['text'])
+    new_note = Note(len(notes) + 1, data['title'], data['text'])
     notes.append(new_note)
     return jsonify(new_note.__dict__), 201
 
@@ -37,13 +38,13 @@ def update_note(id):
     for note in notes:
         if note.id == id:
             data = request.json
+            note.title = data['title']
             note.text = data['text']
             return jsonify(note.__dict__)
     return jsonify({'message': 'Note not found'}), 404
 
 @note_router.route('/notes/<int:id>', methods=['DELETE'])
 def delete_note(id):
-    print("lol")
     global notes
     notes = [note for note in notes if note.id != id]
     return jsonify({'message': 'Note deleted'})
