@@ -1,35 +1,53 @@
-const noteArea = $('#notes-container');
 const noteTitleInput = $('#note-title');
 const noteTextInput = $('#note-text');
+const noteArea = $('#notes-container');
 
-const deleteNote = function() {
-    $(this).parent().remove();
-};
+import {createNoteOnServer, deleteNoteOnServer } from "./note_api.js";
 
-function createNoteOnSite() {
-    const newNote = $('<div>').addClass('note');
-    const title = stripHtml(noteTitleInput.val());
-    const text = stripHtml(noteTextInput.val()).replace(/\r\n|\r|\n/g, '<br />');
-    const html = `<h3>${title}</h3><p>${text}</p><span class="deletenote">&times;</span>`;
-    newNote.html(html);
-    newNote.appendTo(noteArea).draggable(); 
-    applyDeleteListener();
-    clearNoteForm();
-}
+$(document).ready(function() {
 
-function clearNoteForm() {
-    noteTitleInput.val('');
-    noteTextInput.val('');
-}
+    const createNoteButton = $('#create-note');
+    createNoteButton.on('click', createNoteOnSite);
 
-function stripHtml(text) {
-    return text.replace(/<\/?[^>]+(>|$)/g, '');
-}
+    async function createNoteOnSite() {
+        const data = await createNoteOnServer();
+        
+        const newNote = $('<div>').addClass('note note' + data.id);
+        const title = stripHtml(data.title);
+        const text = stripHtml(data.text).replace(/\r\n|\r|\n/g, '<br />');
+        const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${data.id}">&times;</span>`;
+        newNote.html(html);
+        newNote.appendTo(noteArea);
+        newNote.draggable(); 
+        
+        applyDeleteListener(newNote);
+        
+        clearNoteForm();
+    }
+    
+    function applyDeleteListener(noteElement) {
+        $('.delete-note', noteElement).click(function() {
+            const noteId = $(this).data('id');
+            $(this).closest('.note' + noteId).remove(); 
+            deleteNoteOnServer(noteId);
+        });
+    }
+        
+        function stripHtml(text) {
+            return text.replace(/<\/?[^>]+(>|$)/g, '');
+        }
+        
+        function clearNoteForm() {
+            noteTitleInput.val('');
+            noteTextInput.val('');
+        }
 
+    const deleteNoteOnSite = function() {
+        $('.delete-note').click(function() {
+            const noteId = $(this).data('id'); 
+            $('.note-' + noteId).remove(); 
+            deleteNoteOnServer(noteId);
+        });
+    };
 
-function applyDeleteListener() {
-    $('.deletenote').off('click', deleteNote);
-    $('.deletenote').on('click', deleteNote);
-}
-
-export {createNoteOnSite}
+});
