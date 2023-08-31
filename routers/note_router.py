@@ -28,9 +28,11 @@ def get_note(id):
 
 @note_router.route('/notes', methods=['POST'])
 def create_note():
+    # print(request.json)
     data = request.json
     new_note = Note(len(notes) + 1, data['title'], data['text'])
     notes.append(new_note)
+    print(new_note.__dict__)
     return jsonify(new_note.__dict__), 201
 
 @note_router.route('/notes/<int:id>', methods=['PUT'])

@@ -3,18 +3,27 @@
 <head>
     <title>Notes App</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script> <!-- Add this line for jQuery UI -->
-    <script type="module" src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script> 
+    <!-- <script type="module" src="{{ url_for('static', filename='scripts/note.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/note_api.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/note_view.js') }}"></script> -->
+    <script type="module" src="{{ url_for('static', filename='scripts/note_listener.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
 </head>
 <body>
-    <div class="note">
-        <h1>Notes</h1>
-        <ul id="notes-list" class="sortable-list"></ul>
-        <input type="text" id="title" placeholder="">
-        <input type="text" id="note" placeholder="">
-        <button id="add-button">Add Note</button>
+    <div id="notes-container"></div>
+    <div class="note-form">
+        <label for="note-title">Title for your note:</label>
+        <input type="text" name="note-title" id="note-title" />
+        <label for="note-text">Write something down:</label>
+        <textarea
+            name="note-text"
+            id="note-text"
+            cols="24"
+            rows="10"
+        ></textarea>
+        <button class="button" id="create-note">Make Note!</button>
     </div>
 </body>
 </html>
