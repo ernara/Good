@@ -15,9 +15,13 @@ function createNoteOnServer() {
 }
 
 function GetNotesFromServer() {
-    $.ajax({
-        url: "/notes/",
-        type: "Get",
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "/notes",
+            type: "GET",
+            success: resolve,  
+            error: reject   
+        });
     });
 }
 
@@ -28,6 +32,6 @@ function deleteNoteOnServer(noteId) {
     });
 }
 
-export {createNoteOnServer, deleteNoteOnServer};
+export {createNoteOnServer, deleteNoteOnServer, GetNotesFromServer};
 
 

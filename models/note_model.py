@@ -1,8 +1,20 @@
-class Note:
-    def __init__(self, id, title=None, text=None):
-        self.id = id
+from db import db
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))
+    text = db.Column(db.Text)
+
+    def __init__(self, title, text):
         self.title = title
         self.text = text
 
-    def __str__(self):
-        return f"Note ID: {self.id}, Title: {self.title} Text: {self.text}"
+    def __repr__(self):
+        return f"<Note {self.title}>"
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'text': self.text
+        }
