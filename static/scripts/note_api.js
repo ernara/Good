@@ -32,6 +32,17 @@ function deleteNoteOnServer(noteId) {
     });
 }
 
-export {createNoteOnServer, deleteNoteOnServer, GetNotesFromServer};
+function deleteAllNotesOnServer() {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: "/notes",
+            type: "DELETE",
+            success: resolve,  
+            error: reject 
+        });
+    });
+}
+
+export {createNoteOnServer, deleteNoteOnServer, GetNotesFromServer, deleteAllNotesOnServer};
 
 

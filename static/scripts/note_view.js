@@ -2,12 +2,14 @@ const noteTitleInput = $('#note-title');
 const noteTextInput = $('#note-text');
 const noteArea = $('#notes-container');
 
-import {createNoteOnServer, deleteNoteOnServer, GetNotesFromServer } from "./note_api.js";
+import {createNoteOnServer, deleteNoteOnServer, GetNotesFromServer, deleteAllNotesOnServer } from "./note_api.js";
 
 $(document).ready(function() {
 
     const createNoteButton = $('#create-note');
     createNoteButton.on('click', createNoteOnSite);
+    const deleteNotesButton = $('#delete-notes');
+    deleteNotesButton.on('click', deleteAllNotesOnSite);
 
     async function createNoteOnSite() {
 
@@ -62,7 +64,7 @@ $(document).ready(function() {
         }
     }
 
-    loadNotesOnSite();
+    
 
     
     function applyDeleteListener(noteElement) {
@@ -73,13 +75,23 @@ $(document).ready(function() {
         });
     }
 
-        
-        function stripHtml(text) {
-            return text.replace(/<\/?[^>]+(>|$)/g, '');
+    async function deleteAllNotesOnSite() {
+        const confirmed = confirm("Are you sure you want to delete all notes?");
+        if (confirmed) {
+            await deleteAllNotesOnServer();
+            noteArea.empty();
         }
+    }
+
         
-        function clearNoteForm() {
-            noteTitleInput.val('');
-            noteTextInput.val('');
-        }
+    function stripHtml(text) {
+        return text.replace(/<\/?[^>]+(>|$)/g, '');
+    }
+    
+    function clearNoteForm() {
+        noteTitleInput.val('');
+        noteTextInput.val('');
+    }
+
+    loadNotesOnSite();
 });

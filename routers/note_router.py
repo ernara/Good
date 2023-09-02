@@ -61,4 +61,16 @@ def delete_note(id):
     else:
         return jsonify({'message': 'Note not found'})
 
+from flask import jsonify, request
+
+@note_router.route('/notes', methods=['DELETE'])
+def delete_all_notes():
+    deleted_count = Note.query.delete()
+    db.session.commit()
+    
+    if deleted_count > 0:
+        return jsonify({'message': f'{deleted_count} notes deleted'})
+    else:
+        return jsonify({'message': 'No notes found to delete'})
+
 
