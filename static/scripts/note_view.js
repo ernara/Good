@@ -30,17 +30,31 @@ $(document).ready(function() {
                 
             if (Array.isArray(data)) {
                 const noteArea = $('#notes-container');
+
+                let i =0;
+                let boundaries = 1.3
     
                 data.forEach(note => {
+
                     const newNote = $('<div>').addClass('note note' + note.id);
                     const title = stripHtml(note.title);
                     const text = stripHtml(note.text).replace(/\r\n|\r|\n/g, '<br />');
                     const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${note.id}">&times;</span>`;
                     newNote.html(html);
                     newNote.appendTo(noteArea);
+
+                    const top = Math.floor(i / 4) * newNote.height() * boundaries;
+                    const left = (i % 4) * newNote.width() * boundaries;
+                
+                    newNote.css({
+                        'position': 'absolute',
+                        'top': top + 'px',
+                        'left': left + 'px',
+                    });
                     newNote.draggable();
     
                     applyDeleteListener(newNote);
+                    i++;
                 });
             }
         } catch (error) {
