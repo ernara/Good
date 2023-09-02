@@ -105,7 +105,13 @@ button.button {
   vertical-align: middle;
 }
 
+button.sort-button {
+  background-color: rgb(174, 0, 255);
+  color: rgb(100, 255, 255);
+}
+
 button.delete-button {
   background-color: red;
   color: white;
 }
+

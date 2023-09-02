@@ -10,6 +10,8 @@ $(document).ready(function() {
     createNoteButton.on('click', createNoteOnSite);
     const deleteNotesButton = $('#delete-notes');
     deleteNotesButton.on('click', deleteAllNotesOnSite);
+    const sortNotesButton = $('#sort-notes');
+    sortNotesButton.on('click', loadNotesOnSite);
 
     async function createNoteOnSite() {
 
@@ -27,44 +29,42 @@ $(document).ready(function() {
     }
 
     async function loadNotesOnSite() {
-        try {
-            const data = await GetNotesFromServer();
-                
-            if (Array.isArray(data)) {
-                const noteArea = $('#notes-container');
+        
+        noteArea.empty();
+        const data = await GetNotesFromServer();
+            
+        if (Array.isArray(data)) {
+            const noteArea = $('#notes-container');
 
-                let i =0;
-                let boundaries = 1.3
-    
-                data.forEach(note => {
+            let i =0;
+            let inOneCell = Math.round(Math.sqrt(data.length))+1;
+            let boundaries = 1.3
 
-                    const newNote = $('<div>').addClass('note note' + note.id);
-                    const title = stripHtml(note.title);
-                    const text = stripHtml(note.text).replace(/\r\n|\r|\n/g, '<br />');
-                    const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${note.id}">&times;</span>`;
-                    newNote.html(html);
-                    newNote.appendTo(noteArea);
 
-                    const top = Math.floor(i / 4) * newNote.height() * boundaries;
-                    const left = (i % 4) * newNote.width() * boundaries;
-                
-                    newNote.css({
-                        'position': 'absolute',
-                        'top': top + 'px',
-                        'left': left + 'px',
-                    });
-                    newNote.draggable();
-    
-                    applyDeleteListener(newNote);
-                    i++;
+            data.forEach(note => {
+
+                const newNote = $('<div>').addClass('note note' + note.id);
+                const title = stripHtml(note.title);
+                const text = stripHtml(note.text).replace(/\r\n|\r|\n/g, '<br />');
+                const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${note.id}">&times;</span>`;
+                newNote.html(html);
+                newNote.appendTo(noteArea);
+
+                const top =  Math.floor(i / inOneCell) * newNote.height() * boundaries;
+                const left = (i % inOneCell) * newNote.width() * boundaries;
+            
+                newNote.css({
+                    'position': 'absolute',
+                    'top': top + 'px',
+                    'left': left + 'px',
                 });
-            }
-        } catch (error) {
-            console.error("Error loading notes:", error);
+                newNote.draggable();
+
+                applyDeleteListener(newNote);
+                i++;
+            });
         }
     }
-
-    
 
     
     function applyDeleteListener(noteElement) {
