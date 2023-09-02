@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username() }}<br>
+        </p>
+        <p>
+            {{ form.email.label }}<br>
+            {{ form.email() }}<br>
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password() }}<br>
+        </p>
+        <p>
+            {{ form.confirm_password.label }}<br>
+            {{ form.confirm_password() }}<br>
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>
