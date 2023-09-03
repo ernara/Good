@@ -20,12 +20,35 @@ $(document).ready(function () {
         }
     });
 
-    noteTextInput.on('keydown', async function (e) {
-        if (e.key === 'Enter') {
+noteTitleInput.on('keydown', function (e) {
+    if (e.key === 'Tab') {
+        e.preventDefault(); 
+        noteTextInput.focus(); 
+    }
+});
+
+noteTextInput.on('keydown', function (e) {
+    if (e.key === 'Tab') {
+        e.preventDefault(); 
+        const startPos = this.selectionStart;
+        const endPos = this.selectionEnd;
+        const text = this.value;
+        this.value = text.substring(0, startPos) + '    ' + text.substring(endPos);
+        this.selectionStart = this.selectionEnd = startPos + 4;
+    } else if (e.key === 'Enter') {
+        if (e.shiftKey) {
             e.preventDefault(); 
-            await createNoteOnSite(); 
+            const startPos = this.selectionStart;
+            const text = this.value;
+            this.value = text.substring(0, startPos) + '\n' + text.substring(startPos);
+            this.selectionStart = this.selectionEnd = startPos + 1;
+        } else {
+            e.preventDefault(); 
+            createNoteOnSite(); 
         }
-    });
+    }
+});
+
 
     async function createNoteOnSite() {
         const data = await createNoteOnServer();
