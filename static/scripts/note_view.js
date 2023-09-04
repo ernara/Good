@@ -4,125 +4,79 @@ const noteArea = $('#notes-container');
 
 import { createNoteOnServer, deleteNoteOnServer, GetNotesFromServer, deleteAllNotesOnServer } from "./note_api.js";
 
-$(document).ready(function () {
 
-    const createNoteButton = $('#create-note');
-    createNoteButton.on('click', createNoteOnSite);
-    const deleteNotesButton = $('#delete-notes');
-    deleteNotesButton.on('click', deleteAllNotesOnSite);
-    const sortNotesButton = $('#sort-notes');
-    sortNotesButton.on('click', loadNotesOnSite);
+async function createNoteOnSite() {
+    const data = await createNoteOnServer();
+    const newNote = $('<div>').addClass('note note' + data.id);
+    const title = stripHtml(data.title);
+    const text = stripHtml(data.text).replace(/\r\n|\r|\n/g, '<br />');
+    const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${data.id}">&times;</span>`;
+    newNote.html(html);
+    newNote.appendTo(noteArea);
+    newNote.draggable();
 
-    noteTitleInput.on('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault(); 
-            noteTextInput.focus(); 
-        }
-    });
+    applyDeleteListener(newNote);
+    clearNoteForm();
+}
 
-noteTitleInput.on('keydown', function (e) {
-    if (e.key === 'Tab') {
-        e.preventDefault(); 
-        noteTextInput.focus(); 
-    }
-});
+async function loadNotesOnSite() {
+    noteArea.empty();
+    const data = await GetNotesFromServer();
 
-noteTextInput.on('keydown', function (e) {
-    if (e.key === 'Tab') {
-        e.preventDefault(); 
-        const startPos = this.selectionStart;
-        const endPos = this.selectionEnd;
-        const text = this.value;
-        this.value = text.substring(0, startPos) + '    ' + text.substring(endPos);
-        this.selectionStart = this.selectionEnd = startPos + 4;
-    } else if (e.key === 'Enter') {
-        if (e.shiftKey) {
-            e.preventDefault(); 
-            const startPos = this.selectionStart;
-            const text = this.value;
-            this.value = text.substring(0, startPos) + '\n' + text.substring(startPos);
-            this.selectionStart = this.selectionEnd = startPos + 1;
-        } else {
-            e.preventDefault(); 
-            createNoteOnSite(); 
-        }
-    }
-});
+    if (Array.isArray(data)) {
+        const noteArea = $('#notes-container');
 
+        let i = 0;
+        let inOneCell = Math.round(Math.sqrt(data.length)) + 1;
+        let boundaries = 1.3;
 
-    async function createNoteOnSite() {
-        const data = await createNoteOnServer();
-        const newNote = $('<div>').addClass('note note' + data.id);
-        const title = stripHtml(data.title);
-        const text = stripHtml(data.text).replace(/\r\n|\r|\n/g, '<br />');
-        const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${data.id}">&times;</span>`;
-        newNote.html(html);
-        newNote.appendTo(noteArea);
-        newNote.draggable();
+        data.forEach(note => {
+            const newNote = $('<div>').addClass('note note' + note.id);
+            const title = stripHtml(note.title);
+            const text = stripHtml(note.text).replace(/\r\n|\r|\n/g, '<br />');
+            const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${note.id}">&times;</span>`;
+            newNote.html(html);
+            newNote.appendTo(noteArea);
 
-        applyDeleteListener(newNote);
-        clearNoteForm();
-    }
+            const top = Math.floor(i / inOneCell) * newNote.height() * boundaries;
+            const left = (i % inOneCell) * newNote.width() * boundaries;
 
-    async function loadNotesOnSite() {
-        noteArea.empty();
-        const data = await GetNotesFromServer();
-
-        if (Array.isArray(data)) {
-            const noteArea = $('#notes-container');
-
-            let i = 0;
-            let inOneCell = Math.round(Math.sqrt(data.length)) + 1;
-            let boundaries = 1.3;
-
-            data.forEach(note => {
-                const newNote = $('<div>').addClass('note note' + note.id);
-                const title = stripHtml(note.title);
-                const text = stripHtml(note.text).replace(/\r\n|\r|\n/g, '<br />');
-                const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${note.id}">&times;</span>`;
-                newNote.html(html);
-                newNote.appendTo(noteArea);
-
-                const top = Math.floor(i / inOneCell) * newNote.height() * boundaries;
-                const left = (i % inOneCell) * newNote.width() * boundaries;
-
-                newNote.css({
-                    'position': 'absolute',
-                    'top': top + 'px',
-                    'left': left + 'px',
-                });
-                newNote.draggable();
-
-                applyDeleteListener(newNote);
-                i++;
+            newNote.css({
+                'position': 'absolute',
+                'top': top + 'px',
+                'left': left + 'px',
             });
-        }
-    }
+            newNote.draggable();
 
-    function applyDeleteListener(noteElement) {
-        $('.delete-note', noteElement).click(function () {
-            const noteId = $(this).data('id');
-            $(this).closest('.note' + noteId).remove();
-            deleteNoteOnServer(noteId);
+            applyDeleteListener(newNote);
+            i++;
         });
     }
+}
 
-    async function deleteAllNotesOnSite() {
-        const confirmed = confirm("Are you sure you want to delete all notes?");
-        if (confirmed) {
-            await deleteAllNotesOnServer();
-            noteArea.empty();
-        }
+function applyDeleteListener(noteElement) {
+    $('.delete-note', noteElement).click(function () {
+        const noteId = $(this).data('id');
+        $(this).closest('.note' + noteId).remove();
+        deleteNoteOnServer(noteId);
+    });
+}
+
+async function deleteAllNotesOnSite() {
+    const confirmed = confirm("Are you sure you want to delete all notes?");
+    if (confirmed) {
+        await deleteAllNotesOnServer();
+        noteArea.empty();
     }
+}
 
-    function stripHtml(text) {
-        return text.replace(/<\/?[^>]+(>|$)/g, '');
-    }
+function stripHtml(text) {
+    return text.replace(/<\/?[^>]+(>|$)/g, '');
+}
 
-    function clearNoteForm() {
-        noteTitleInput.val('');
-        noteTextInput.val('');
-    }
+function clearNoteForm() {
+    noteTitleInput.val('');
+    noteTextInput.val('');
+}
 
-    loadNotesOnSite();
-});
+export {createNoteOnSite, deleteAllNotesOnSite, loadNotesOnSite}

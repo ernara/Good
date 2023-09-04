@@ -2,6 +2,7 @@ const noteTitleInput = $('#note-title');
 const noteTextInput = $('#note-text');
 
 function createNoteOnServer() {
+    
     return new Promise((resolve, reject) => {
         $.ajax({
             url: "notes",
