@@ -28,7 +28,8 @@ async function loadNotesOnSite() {
 
         let i = 0;
         let inOneCell = Math.round(Math.sqrt(data.length)) + 1;
-        let boundaries = 1.3;
+        let multiplier = 1.3;
+        let boundaries = 20
         let height = 0;
 
         data.forEach(note => {
@@ -38,7 +39,7 @@ async function loadNotesOnSite() {
             const html = `<h3>${title}</h3><p>${text}</p><span class="delete-note" data-id="${note.id}">&times;</span>`;
             newNote.html(html);
             newNote.appendTo(noteArea);
-            const left = (i % inOneCell) * newNote.width() * boundaries;
+            const left = (i % inOneCell) * newNote.width() * multiplier + boundaries;
             if (newNote.height()>height)
             {
                 height=newNote.height();
@@ -46,7 +47,6 @@ async function loadNotesOnSite() {
 
             newNote.css({
                 'position': 'absolute',
-                'top': top + 'px',
                 'left': left + 'px',
             });
             newNote.draggable();
@@ -60,7 +60,7 @@ async function loadNotesOnSite() {
         noteArea.children('.note').each(function(index, element) {
             const $childNote = $(element);
             const childNoteHeight = $childNote.height();
-            const top = height * Math.floor(i / inOneCell) * boundaries;
+            const top = height * Math.floor(i / inOneCell) * multiplier + boundaries;
             $childNote.css('top', top + 'px');
             i++;
         });
