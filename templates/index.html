@@ -5,6 +5,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='scripts/note_view.js') }}"></script> 
+    <script src="{{ url_for('static', filename='scripts/auth.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='scripts/note_listener.js') }}"></script> 
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/auth.css') }}">
@@ -32,9 +33,13 @@
         <button class="button delete-button" id="delete-notes">Delete Notes</button>
     </div>
 
-    <div class="login-icon">
-        <i class="material-icons">person</i>
+<div class="login-icon">
+    <i class="material-icons">person</i>
+    <div class="login-options">
+        <div class="login-option">Login</div>
+        <div class="login-option">Register</div>
     </div>
-
+</div>
+    
 </body>
 </html>
