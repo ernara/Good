@@ -13,6 +13,11 @@ $(document).ready(function () {
 
     $(".login-option").on("click", function () {
         const optionText = $(this).text();
-        alert(optionText + " clicked");
+        
+        if (optionText === "Login") {
+            window.location.href = "/login";
+        } else if (optionText === "Register") {
+            window.location.href = "/register";
+        }
     });
 });
