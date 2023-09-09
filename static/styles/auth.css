@@ -38,3 +38,9 @@
 .login-option:hover {
   background-color: #f0f0f0;
 }
+
+#user-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}

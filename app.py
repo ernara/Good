@@ -1,7 +1,8 @@
+import os
 import json
 from flask import render_template
 from db import db
-from flask import Flask
+from flask import Flask, request
 from routers.note_router import note_router
 from config import Config
 
@@ -23,7 +24,14 @@ app.register_blueprint(auth_router)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    email = request.args.get('email')
+    name = request.args.get('name')
+    token = request.args.get('token')
+    
+    # Render the index.html template and pass user information
+    return render_template('index.html', email=email, name=name, token=token)
+
+
 
 @app.route('/login')
 def login():
@@ -36,7 +44,8 @@ def register():
 
 if __name__ == '__main__':
     with app.app_context():
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
         db.create_all()  
-        app.run(debug=True, port=7777)
+        app.run(debug=True, port=5000)
 
 

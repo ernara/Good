@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Register</title>
+    <title>Index Table</title>
 </head>
 <body>
-    <h1>Registration Page</h1>
-
-    <!-- Add a Google OAuth2 login button -->
-    <form action="/auth/login" method="GET">
-        <button type="submit">Login with Google</button>
-    </form>
+    <table>
+        <tr>
+            <td><a href="/auth/login">Test an API request</a></td>
+        </tr>
+        <tr>
+            <td><a href="/auth/authorize">Test the auth flow directly</a></td>
+        </tr>
+        <tr>
+            <td><a href="/revoke">Revoke current credentials</a></td>
+        </tr>
+        <tr>
+            <td><a href="/clear">Clear Flask session credentials</a></td>
+        </tr>
+    </table>
 </body>
 </html>
