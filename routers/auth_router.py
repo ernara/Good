@@ -12,9 +12,9 @@ SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 API_SERVICE_NAME = 'drive'
 API_VERSION = 'v2'
 
-
 @auth_router.route('/auth/login')
 def test_api_request():
+    print("login")
     if 'credentials' not in session:
         return redirect('authorize')
 
@@ -26,8 +26,6 @@ def test_api_request():
 
     user_info = drive.about().get(fields="user(emailAddress,displayName)").execute()
 
-    print("User Info:", user_info)
-
     email = user_info['user']['emailAddress']
     name = user_info['user']['displayName']
     
@@ -37,18 +35,10 @@ def test_api_request():
 
     return redirect('/?email={}&name={}&token={}'.format(email, name, token))
 
-@auth_router.route('/api/userinfo')
-def get_user_info():
-    user_info = {
-        'name': 'John',
-        'surname': 'Doe'
-    }
-    return jsonify(user_info)
-
-
 @auth_router.route('/auth/authorize')
 def authorize():
-
+  print("authorize")
+  
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
       CLIENT_SECRETS_FILE, scopes=SCOPES)
 
@@ -61,13 +51,15 @@ def authorize():
       include_granted_scopes='true')
 
   session['state'] = state
+  print(authorization_url)
+  
 
   return redirect(authorization_url)
 
 
 @auth_router.route('/oauth2callback')
 def oauth2callback():
-  print("hi")
+  print("oauth2callback")
   state = session['state']
 
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
@@ -86,6 +78,7 @@ def oauth2callback():
 
 @auth_router.route('/revoke')
 def revoke():
+  print("revoke")
   if 'credentials' not in session:
     return ('You need to <a href="/auth/authorize">authorize</a> before ' +
             'testing the code to revoke credentials.')
@@ -106,12 +99,10 @@ def revoke():
 
 @auth_router.route('/clear')
 def clear_credentials():
-  print ("1")
+  print ("clear")
   if 'credentials' in session:
-    print ("2")
     del session['credentials']
-  print ("3")
-  return (redirect(url_for('register')))
+  return redirect('/')
 
 
 def credentials_to_dict(credentials):

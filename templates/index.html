@@ -42,11 +42,28 @@
         </div>
     </div>
 
-    <!-- User Information Container -->
     <div class="user-info" id="user-info" style="display: none;">
         <span id="user-name"></span>
         <span id="user-surname"></span>
+        <span id="user-email"></span> 
+        <span id="user-token"></span> 
     </div>
 
+    <script>
+        function getQueryParams() {
+            const queryParams = new URLSearchParams(window.location.search);
+            const email = queryParams.get('email');
+            const name = queryParams.get('name');
+            const token = queryParams.get('token');
+
+            document.getElementById('user-email').textContent = 'Email: ' + email;
+            document.getElementById('user-name').textContent = 'Name: ' + name;
+            document.getElementById('user-token').textContent = 'Token: ' + token;
+
+            document.getElementById('user-info').style.display = 'block';
+        }
+
+        getQueryParams();
+    </script>
 </body>
 </html>
