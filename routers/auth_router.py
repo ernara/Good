@@ -16,6 +16,7 @@ API_VERSION = 'v2'
 def test_api_request():
     print("login")
     if 'credentials' not in session:
+        print("not in session")
         return redirect('authorize')
 
     credentials = google.oauth2.credentials.Credentials(
@@ -28,12 +29,22 @@ def test_api_request():
 
     email = user_info['user']['emailAddress']
     name = user_info['user']['displayName']
-    
     token = credentials.token
 
     session['credentials'] = credentials_to_dict(credentials)
 
     return redirect('/?email={}&name={}&token={}'.format(email, name, token))
+
+@auth_router.route('/auth/get_token')
+def get_session_data():
+    credentials = session.get('credentials', {})
+
+    if credentials:
+        token = credentials.get('token')
+        return jsonify({'token': token})
+    else:
+        return jsonify("Session data not found")
+
 
 @auth_router.route('/auth/authorize')
 def authorize():

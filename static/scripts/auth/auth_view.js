@@ -46,5 +46,25 @@ $(document).ready(function () {
     $('#user-name').text(name);
     $('#user-surname').text(surname);
 
+    // Function to fetch session data from the server
+    
+  
+    fetchSessionData();
+  
+    
 
 });
+
+function fetchSessionData() {
+    $.ajax({
+      url: '/auth/get_token',  
+      method: 'GET',
+      dataType: 'json',
+      success: function(data) {
+        console.log(data);
+      },
+      error: function(error) {
+        console.error('Error fetching session data:', error);
+      }
+    });
+  }
