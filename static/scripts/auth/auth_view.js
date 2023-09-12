@@ -1,70 +1,70 @@
 $(document).ready(function () {
-    var isAuthenticated = true;
-    const userIcon = $(".login-icon");
+    const loginIcon = $(".login-icon");
+    const optionsContainer = $(".login-options");
 
-    userIcon.on("click", function () {
-        const optionsContainer = $(".login-options");
-
+    loginIcon.on("click", function () {
         if (optionsContainer.is(":visible")) {
+            console.log("hide");
             optionsContainer.hide();
         } else {
+            console.log("show");
             optionsContainer.show();
         }
     });
 
-    $(".login-option").on("click", function () {
-        const optionText = $(this).text();
-        
-        if (optionText === "Login") {
-            window.location.href = "/login";
-        } else if (optionText === "Register") {
-            window.location.href = "/register";
-        }
-    });
-
-    if (isAuthenticated) {
-        var userInfoContainer = $("#user-info");
-        var userNameElement = $("#user-name");
-        var userSurnameElement = $("#user-surname");
-
-        var userName = "John";
-        var userSurname = "Doe";
-
-        userInfoContainer.css("display", "block");
-        userNameElement.text(userName);
-        userSurnameElement.text(userSurname);
-    }
-
-    function getQueryParam(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-    }
-
-    const name = getQueryParam('name');
-    const surname = getQueryParam('surname');
-
-    $('#user-name').text(name);
-    $('#user-surname').text(surname);
-
-    // Function to fetch session data from the server
-    
-  
     fetchSessionData();
-  
-    
-
 });
 
 function fetchSessionData() {
     $.ajax({
-      url: '/auth/get_token',  
-      method: 'GET',
-      dataType: 'json',
-      success: function(data) {
-        console.log(data);
-      },
-      error: function(error) {
-        console.error('Error fetching session data:', error);
-      }
+        url: '/auth/get_token',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            console.log(data);
+            if (data.error) {
+                console.error('User not authenticated');
+                showLoginOptions(); 
+            } else {
+                console.log('User is authenticated');
+                showLogoutOption(); 
+            }
+        },
+        error: function(error) {
+            console.error('Error fetching session data:', error);
+            showLoginOptions(); 
+        }
     });
-  }
+}
+
+function showLoginOptions() {
+    $(".login-options").empty(); 
+    $(".login-options").append("<div class='login-option'>Login</div>");
+    $(".login-options").append("<div class='login-option'>Register</div>");
+
+    $(".login-option:contains('Login')").on("click", function () {
+        window.location.href = "/login"; 
+    });
+
+    $(".login-option:contains('Register')").on("click", function () {
+        window.location.href = "/register"; 
+    });
+}
+
+function showLogoutOption() {
+    $(".login-options").empty(); 
+    $(".login-options").append("<div class='login-option'>Logout</div>");
+    $(".login-options .login-option").on("click", function () {
+        $.ajax({
+            url: '/auth/logout',
+            method: 'POST', 
+            success: function () {
+               
+                window.location.href = "/";
+            },
+            error: function (error) {
+                console.error('Error logging out:', error);
+            }
+        });
+    });
+}

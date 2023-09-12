@@ -33,7 +33,7 @@ def test_api_request():
 
     session['credentials'] = credentials_to_dict(credentials)
 
-    return redirect('/?email={}&name={}&token={}'.format(email, name, token))
+    return redirect('/')
 
 @auth_router.route('/auth/get_token')
 def get_session_data():
@@ -43,7 +43,7 @@ def get_session_data():
         token = credentials.get('token')
         return jsonify({'token': token})
     else:
-        return jsonify("Session data not found")
+        return jsonify({"error": "Not authenticated"})
 
 
 @auth_router.route('/auth/authorize')
@@ -108,12 +108,13 @@ def revoke():
     return('An error occurred.')
 
 
-@auth_router.route('/clear')
-def clear_credentials():
-  print ("clear")
-  if 'credentials' in session:
-    del session['credentials']
-  return redirect('/')
+@auth_router.route('/auth/logout', methods=['POST'])
+def logout():
+    print("logout")
+    if 'credentials' in session:
+        del session['credentials']
+    return redirect('/')
+
 
 
 def credentials_to_dict(credentials):
