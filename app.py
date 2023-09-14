@@ -24,12 +24,7 @@ app.register_blueprint(auth_router)
 
 @app.route('/')
 def index():
-    email = request.args.get('email')
-    name = request.args.get('name')
-    token = request.args.get('token')
-    
-    # Render the index.html template and pass user information
-    return render_template('index.html', email=email, name=name, token=token)
+    return render_template('index.html')
 
 
 
