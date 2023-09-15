@@ -13,6 +13,7 @@ $(document).ready(function () {
     });
 
     fetchSessionData();
+    //fetchProfilePicture();
 });
 
 function fetchSessionData() {
@@ -36,6 +37,34 @@ function fetchSessionData() {
         }
     });
 }
+
+function fetchProfilePicture() {
+    $.ajax({
+        url: "/get_profile_picture",
+        method: "GET",
+        success: function (data) {
+            console.log(data);
+            if (data.error) {
+                console.error('User not authenticated');
+            } else {
+                console.log('User is authenticated in profilepicture');
+                console.log(data.profile_picture_url);
+                const profilePictureUrl = data.profile_picture_url;
+                if (profilePictureUrl) {
+                    console.log("----------")
+                    console.log(profilePictureUrl);
+                    console.log("----------")
+                    const img = $("<img>").attr("src", profilePictureUrl).attr("alt", "Profile Picture");
+                    $("body").append(img);
+                }
+            }
+        },
+        error: function (error) {
+            console.error("Error:", error);
+        }
+    });
+}
+
 
 function showLoginOptions() {
     $(".login-options").empty(); 
@@ -68,3 +97,5 @@ function showLogoutOption() {
         });
     });
 }
+
+
