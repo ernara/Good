@@ -1,19 +1,21 @@
 from flask import Blueprint, jsonify, request
 from models.note_model import Note
 from db import db
+from .auth_router import get_token
 
 note_router = Blueprint('note_router', __name__)
 
 @note_router.route('/notes', methods=['GET'])
 def get_notes():
-    notes = Note.query.all() 
+    notes = Note.query.filter_by(user_id=get_token()).all()
 
     notes_list = []
     for note in notes:
         notes_list.append({
             'id': note.id,
             'title': note.title,
-            'text': note.text
+            'text': note.text,
+            'user_id': note.user_id
         })
 
     return jsonify(notes_list), 200
@@ -29,8 +31,9 @@ def get_note(id):
 
 @note_router.route('/notes', methods=['POST'])
 def create_note():
+    
     data = request.json
-    new_note = Note(title=data['title'], text=data['text']) 
+    new_note = Note(title=data['title'], text=data['text'], user_id=get_token())  #id pakeisti vėliau
     db.session.add(new_note)  
     db.session.commit()  
     
@@ -65,7 +68,7 @@ from flask import jsonify, request
 
 @note_router.route('/notes', methods=['DELETE'])
 def delete_all_notes():
-    deleted_count = Note.query.delete()
+    deleted_count = Note.query.filter_by(user_id=get_token()).delete()
     db.session.commit()
     
     if deleted_count > 0:

@@ -3,6 +3,8 @@ import requests
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
+from models.user_model import User
+from db import db
 
 CLIENT_SECRETS_FILE = "client_secret.json"
 
@@ -22,16 +24,15 @@ def test_api_request():
     credentials = google.oauth2.credentials.Credentials(
         **session['credentials'])
 
-    drive = googleapiclient.discovery.build(
-        API_SERVICE_NAME, API_VERSION, credentials=credentials)
-
-    user_info = drive.about().get(fields="user(emailAddress,displayName)").execute()
-
-    email = user_info['user']['emailAddress']
-    name = user_info['user']['displayName']
-    token = credentials.token
-
     session['credentials'] = credentials_to_dict(credentials)
+
+    provided_token = get_token()
+
+    user = User.query.filter_by(oauth2_token=provided_token).first()
+    if user is None:
+        new_user = User(oauth2_token=provided_token)
+        db.session.add(new_user)
+        db.session.commit()
 
     return redirect('/')
 
@@ -45,6 +46,9 @@ def get_session_data():
     else:
         return jsonify({"error": "Not authenticated"})
 
+def get_token():
+  credentials = session.get('credentials', {})
+  return credentials.get('token')    
 
 @auth_router.route('/auth/authorize')
 def authorize():
@@ -62,8 +66,8 @@ def authorize():
       include_granted_scopes='true')
 
   session['state'] = state
+
   print(authorization_url)
-  
 
   return redirect(authorization_url)
 
